@@ -125,6 +125,25 @@ public class MyForgettingMapTest {
 	}
 	
 	@Test
+	public void test_removing_least_used_associations_to_forgetting_map() {
+		final String value = "value";
+		
+		ForgettingMap<Integer, String> map = new MyForgettingMap<Integer, String>(5);
+		
+		for(int i=1; i<=10; i++) {
+			map.add(i, value+i);	
+		}
+		
+		Assert.assertNotNull(map);
+		Assert.assertEquals(5, map.getSize());
+
+		for(int i=6; i<=10; i++) {
+			Assert.assertEquals(value+i, map.find(i));
+		}
+
+	}
+	
+	@Test
 	public void test_mutliple_threads_accessing_the_map() throws InterruptedException, BrokenBarrierException {
 		final String value = "value";
 
