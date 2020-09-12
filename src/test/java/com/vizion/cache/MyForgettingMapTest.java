@@ -151,6 +151,7 @@ public class MyForgettingMapTest {
 		Assert.assertNotNull(map);
 		Assert.assertEquals(5, map.getSize());
 		
+		// this should make the association with key=5 move to the end, as its not been accessed
 		for(int i=1; i<=4; i++) {
 			map.find(i);
 			Assert.assertEquals(value+i, map.find(i));
