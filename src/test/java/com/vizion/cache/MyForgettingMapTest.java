@@ -89,7 +89,6 @@ public class MyForgettingMapTest {
 			map.add(i, value+i);	
 		}
 		
-		Assert.assertNotNull(map);
 		Assert.assertEquals(5, map.getSize());
 
 		for(int i=1; i<=5; i++) {
@@ -99,7 +98,7 @@ public class MyForgettingMapTest {
 	}
 	
 	@Test
-	public void test_removing_least_recently_accessed_association_from_the_forgetting_map() {
+	public void test_removing_least_used_association_from_forgetting_map() {
 		final String leastUsed = "value1";
 		final String value = "value";
 		
@@ -112,36 +111,59 @@ public class MyForgettingMapTest {
 			map.add(i, value+i);	
 		}		
 		
-		Assert.assertNotNull(map);
 		Assert.assertEquals(5, map.getSize());
-
 		Assert.assertNull(map.find(1));
-		Assert.assertEquals(value+2, map.find(2));
-		Assert.assertEquals(value+3, map.find(3));
-		Assert.assertEquals(value+4, map.find(4));
-		Assert.assertEquals(value+5, map.find(5));
-		Assert.assertEquals(value+6, map.find(6));
+		
+		for(int i=2; i<=6; i++) {
+			Assert.assertEquals(value+i, map.find(i));
+		}
 
 	}
 	
 	@Test
-	public void test_removing_least_used_associations_to_forgetting_map() {
+	public void test_removing_multiple_associations_from_forgetting_map() {
 		final String value = "value";
 		
 		ForgettingMap<Integer, String> map = new MyForgettingMap<Integer, String>(5);
 		
 		for(int i=1; i<=10; i++) {
 			map.add(i, value+i);	
-		}
+		}		
+			
+		Assert.assertEquals(5, map.getSize());		
 		
-		Assert.assertNotNull(map);
-		Assert.assertEquals(5, map.getSize());
-
 		for(int i=6; i<=10; i++) {
 			Assert.assertEquals(value+i, map.find(i));
 		}
 
 	}
+	
+	@Test
+	public void test_removing_least_recently_accessed_associations_from_forgetting_map() {
+		final String value = "value";
+		
+		ForgettingMap<Integer, String> map = new MyForgettingMap<Integer, String>(5);
+		
+		for(int i=1; i<=5; i++) {
+			map.add(i, value+i);	
+		}
+		
+		Assert.assertNotNull(map);
+		Assert.assertEquals(5, map.getSize());
+		
+		for(int i=1; i<=4; i++) {
+			map.find(i);
+			Assert.assertEquals(value+i, map.find(i));
+		}
+		
+		map.add(6, value+6); // should remove key=5	
+
+		for(int i=1; i<=4; i++) {
+			Assert.assertEquals(value+i, map.find(i));
+		}
+		Assert.assertEquals(value+6, map.find(6));
+
+	}	
 	
 	@Test
 	public void test_mutliple_threads_accessing_the_map() throws InterruptedException, BrokenBarrierException {
@@ -163,6 +185,7 @@ public class MyForgettingMapTest {
 							assertEquals(value+j, val);
 						}						
 					} finally {
+						Assert.assertEquals(5, map.getSize());
 						endGate.countDown();
 					}
 				} catch (InterruptedException e) { Assert.fail();}
